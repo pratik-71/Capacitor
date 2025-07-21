@@ -1,102 +1,142 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [isMobile, setIsMobile] = useState(false);
+  const [platform, setPlatform] = useState('web');
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  useEffect(() => {
+    // Detect if running on mobile
+    const checkMobile = () => {
+      if (typeof window !== 'undefined' && navigator) {
+        const userAgent = navigator.userAgent.toLowerCase();
+        const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+        setIsMobile(isMobileDevice);
+        
+        // Detect platform
+        if (userAgent.includes('android')) {
+          setPlatform('android');
+        } else if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
+          setPlatform('ios');
+        } else {
+          setPlatform('web');
+        }
+      }
+    };
+
+    checkMobile();
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+      {/* Header */}
+      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-4xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">C</span>
+              </div>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Capacitor App</h1>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full font-medium">
+                {platform.toUpperCase()}
+              </span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Cross-Platform App
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
+            Built with Next.js, TypeScript, Tailwind CSS, and Capacitor
+          </p>
+          
+          {/* Platform Info */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Platform Information
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                <div className="text-blue-600 dark:text-blue-400 font-medium">Platform</div>
+                <div className="text-gray-900 dark:text-white">{platform}</div>
+              </div>
+              <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                <div className="text-green-600 dark:text-green-400 font-medium">Device Type</div>
+                <div className="text-gray-900 dark:text-white">{isMobile ? 'Mobile' : 'Desktop'}</div>
+              </div>
+                             <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
+                 <div className="text-purple-600 dark:text-purple-400 font-medium">User Agent</div>
+                 <div className="text-gray-900 dark:text-white text-sm truncate">
+                   {typeof window !== 'undefined' && navigator ? navigator.userAgent.substring(0, 50) + '...' : 'Loading...'}
+                 </div>
+               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Features Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Web App</h3>
+            <p className="text-gray-600 dark:text-gray-300">Full-featured web application with modern UI/UX</p>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Mobile App</h3>
+            <p className="text-gray-600 dark:text-gray-300">Native mobile experience on iOS and Android</p>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Cross-Platform</h3>
+            <p className="text-gray-600 dark:text-gray-300">Single codebase for all platforms</p>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="text-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors">
+              Get Started
+            </button>
+            <button className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-medium py-3 px-6 rounded-lg transition-colors">
+              Learn More
+            </button>
+          </div>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      {/* Footer */}
+      <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-12">
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <div className="text-center text-gray-600 dark:text-gray-400">
+            <p>Built with Next.js, TypeScript, Tailwind CSS & Capacitor</p>
+          </div>
+        </div>
       </footer>
     </div>
   );
