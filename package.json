@@ -7,9 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "build:web": "next build"
+    "build:web": "next build",
+    "build:cloud": "next build && npx cap sync"
   },
   "dependencies": {
+    "@capacitor/cli": "^7.4.2",
     "next": "15.4.2",
     "react": "19.1.0",
     "react-dom": "19.1.0"
