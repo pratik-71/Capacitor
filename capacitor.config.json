@@ -9,5 +9,13 @@
     "SplashScreen": {
       "launchShowDuration": 0
     }
+  },
+  "android": {
+    "buildOptions": {
+      "keystorePath": null,
+      "keystoreAlias": null,
+      "keystorePassword": null,
+      "keyPassword": null
+    }
   }
 } 
