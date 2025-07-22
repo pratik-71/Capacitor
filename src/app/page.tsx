@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { PushNotifications } from '@capacitor/push-notifications';
 
 export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
@@ -36,7 +39,28 @@ export default function Home() {
   }, []);
 
   const testNotification = async () => {
-    if ('Notification' in window) {
+    // Check if running in a mobile WebView (Capacitor app)
+    const isCapacitor = typeof window !== 'undefined' && 'Capacitor' in window;
+    
+    if (isCapacitor) {
+      try {
+        // Request permission for push notifications
+        const permission = await PushNotifications.requestPermissions();
+        
+        if (permission.receive === 'granted') {
+          // Register for push notifications
+          await PushNotifications.register();
+          
+          // Show a local notification (simulating push)
+          alert('📱 Push notification permission granted!\n\nIn a real app, you would receive push notifications from your server.');
+        } else {
+          alert('📱 Push notification permission denied');
+        }
+      } catch (error) {
+        alert('📱 Error setting up notifications: ' + (error as Error).message);
+      }
+    } else if ('Notification' in window) {
+      // In regular browser
       if (Notification.permission === 'granted') {
         new Notification('Test Notification', {
           body: 'This is a test notification from your app!',
@@ -55,12 +79,27 @@ export default function Home() {
         }
       }
     } else {
-      alert('Notifications not supported in this browser');
+      alert('📱 Running in mobile WebView - notifications work differently here!\n\nIn a real Capacitor app, you would use @capacitor/push-notifications plugin for native notifications.');
     }
   };
 
-  const testCamera = () => {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  const testCamera = async () => {
+    const isCapacitor = typeof window !== 'undefined' && 'Capacitor' in window;
+    
+    if (isCapacitor) {
+      try {
+        const image = await Camera.getPhoto({
+          quality: 90,
+          allowEditing: true,
+          resultType: CameraResultType.Uri,
+          source: CameraSource.Camera
+        });
+        
+        alert('📷 Photo captured successfully!\n\nImage URI: ' + image.webPath);
+      } catch (error) {
+        alert('📷 Camera error: ' + (error as Error).message);
+      }
+    } else if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia({ video: true })
         .then(stream => {
           alert('Camera access granted! This would open camera in a real app.');
@@ -75,21 +114,38 @@ export default function Home() {
     }
   };
 
-  const testGallery = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.multiple = true;
+  const testGallery = async () => {
+    const isCapacitor = typeof window !== 'undefined' && 'Capacitor' in window;
     
-    input.onchange = (e) => {
-      const files = (e.target as HTMLInputElement).files;
-      if (files && files.length > 0) {
-        alert(`Selected ${files.length} image(s) from gallery!`);
-        // In a real app, you would process these files
+    if (isCapacitor) {
+      try {
+        const image = await Camera.getPhoto({
+          quality: 90,
+          allowEditing: true,
+          resultType: CameraResultType.Uri,
+          source: CameraSource.Photos
+        });
+        
+        alert('🖼️ Image selected from gallery!\n\nImage URI: ' + image.webPath);
+      } catch (error) {
+        alert('🖼️ Gallery error: ' + (error as Error).message);
       }
-    };
-    
-    input.click();
+    } else {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.multiple = true;
+      
+      input.onchange = (e) => {
+        const files = (e.target as HTMLInputElement).files;
+        if (files && files.length > 0) {
+          alert(`Selected ${files.length} image(s) from gallery!`);
+          // In a real app, you would process these files
+        }
+      };
+      
+      input.click();
+    }
   };
 
   const testGeolocation = () => {
@@ -108,8 +164,17 @@ export default function Home() {
     }
   };
 
-  const testVibration = () => {
-    if ('vibrate' in navigator) {
+  const testVibration = async () => {
+    const isCapacitor = typeof window !== 'undefined' && 'Capacitor' in window;
+    
+    if (isCapacitor) {
+      try {
+        await Haptics.impact({ style: ImpactStyle.Medium });
+        alert('📳 Native haptic feedback triggered!');
+      } catch (error) {
+        alert('📳 Haptic error: ' + (error as Error).message);
+      }
+    } else if ('vibrate' in navigator) {
       navigator.vibrate([200, 100, 200]);
       alert('Vibration pattern triggered!');
     } else {
