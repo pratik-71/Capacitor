@@ -41,6 +41,11 @@ yarn-error.log*
 next-env.d.ts
 
 # capacitor
-/android
 /ios
 *.log
+
+# Android build outputs (keep directory structure for cloud builds)
+/android/app/build/
+/android/build/
+/android/.gradle/
+/android/capacitor-cordova-android-plugins/
